@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Empiria Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .gradient-text {
+            background: linear-gradient(90deg, #7289DA, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="bg-[#0f172a] text-slate-200 font-sans min-h-screen">
+    <nav class="glass sticky top-0 z-50 p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-[#7289DA] rounded-xl flex items-center justify-center shadow-lg shadow-[#7289DA]/20">
+                    <i class="fas fa-bolt text-white"></i>
+                </div>
+                <h1 class="text-xl font-bold gradient-text">Empiria</h1>
+            </div>
+            <div class="hidden md:flex space-x-8 items-center">
+                <a href="#features" class="text-slate-400 hover:text-white transition-colors">Features</a>
+                <a href="/commands" class="text-slate-400 hover:text-white transition-colors">Commands</a>
+                <a href="/guide" class="text-slate-400 hover:text-white transition-colors">Guide</a>
+                <a href="https://discord.gg/ecz" target="_blank" class="text-slate-400 hover:text-white transition-colors">discord.gg/ecz</a>
+                <% if (user) { %>
+                    <a href="/dashboard" class="bg-[#7289DA] hover:bg-[#5b6eae] px-5 py-2 rounded-lg font-medium transition-all text-white">Dashboard</a>
+                <% } else { %>
+                    <a href="/login" class="bg-[#7289DA] hover:bg-[#5b6eae] px-5 py-2 rounded-lg font-medium transition-all text-white">Login</a>
+                <% } %>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto mt-12 px-4">
+        <div class="text-center mb-16">
+            <h2 class="text-5xl font-extrabold mb-4 tracking-tight">The Ultimate Discord <span class="gradient-text">Powerhouse</span></h2>
+            <p class="text-slate-400 text-lg max-w-2xl mx-auto">Manage moderation, economy, and clans with the most advanced dashboard built for scaling communities.</p>
+        </div>
+
+        <div id="features" class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+            <div class="glass p-8 rounded-2xl hover:bg-white/10 transition-all group">
+                <div class="w-12 h-12 bg-blue-500/20 text-blue-400 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-shield-alt text-xl"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Moderation</h3>
+                <p class="text-slate-400">Automated protection with advanced anti-nuke and automod systems.</p>
+            </div>
+            <div class="glass p-8 rounded-2xl hover:bg-white/10 transition-all group">
+                <div class="w-12 h-12 bg-purple-500/20 text-purple-400 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-users text-xl"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Clans</h3>
+                <p class="text-slate-400">Fixed and operational clan system with wars, banks, and upgrades.</p>
+            </div>
+            <div class="glass p-8 rounded-2xl hover:bg-white/10 transition-all group">
+                <div class="w-12 h-12 bg-emerald-500/20 text-emerald-400 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-coins text-xl"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Economy</h3>
+                <p class="text-slate-400">Deeply integrated economy with pets, farming, and global leaderboards.</p>
+            </div>
+        </div>
+
+        <div class="glass p-12 rounded-3xl relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 blur-[100px]"></div>
+            <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+                <div>
+                    <h3 class="text-3xl font-bold mb-4">Ready to elevate your server?</h3>
+                    <div class="flex flex-wrap gap-4">
+                        <div class="flex items-center space-x-2 text-slate-400">
+                            <i class="fas fa-check text-blue-500"></i>
+                            <span><%= stats.servers %> Servers</span>
+                        </div>
+                        <div class="flex items-center space-x-2 text-slate-400">
+                            <i class="fas fa-check text-blue-500"></i>
+                            <span><%= stats.users %> Users</span>
+                        </div>
+                        <div class="flex items-center space-x-2 text-slate-400">
+                            <i class="fas fa-check text-blue-500"></i>
+                            <span><%= stats.commands %> Commands</span>
+                        </div>
+                    </div>
+                </div>
+                <a href="<%= inviteLink %>" class="bg-white text-slate-900 px-10 py-4 rounded-xl font-bold hover:bg-slate-200 transition-all shadow-xl shadow-white/5 whitespace-nowrap">
+                    <i class="fab fa-discord mr-2"></i> Add to Discord
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="mt-24 pb-12 border-t border-slate-800/50 pt-12">
+        <div class="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6">
+            <p class="text-slate-500">© 2026 Empiria Bot. Built for the community.</p>
+            <div class="flex space-x-6">
+                <a href="#" class="text-slate-500 hover:text-white transition-colors"><i class="fab fa-github"></i></a>
+                <a href="#" class="text-slate-500 hover:text-white transition-colors"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="text-slate-500 hover:text-white transition-colors"><i class="fab fa-discord"></i></a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bot Control Panel | Empiria</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    .glass { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
+    .gradient-text { background: linear-gradient(90deg, #7289DA, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .log-line { font-family: 'Courier New', monospace; font-size: 12px; white-space: pre-wrap; word-break: break-all; }
+    .log-line.err { color: #f87171; }
+    .log-line.ok  { color: #4ade80; }
+    .log-line.warn{ color: #fbbf24; }
+    #logbox { height: 360px; overflow-y: auto; scroll-behavior: smooth; }
+  </style>
+</head>
+<body class="bg-[#0f172a] text-slate-200 font-sans min-h-screen">
+
+  <!-- Nav -->
+  <nav class="glass sticky top-0 z-50 p-4">
+    <div class="container mx-auto flex justify-between items-center">
+      <a href="/" class="flex items-center space-x-3">
+        <div class="w-10 h-10 bg-[#7289DA] rounded-xl flex items-center justify-center shadow-lg shadow-[#7289DA]/20">
+          <i class="fas fa-bolt text-white"></i>
+        </div>
+        <h1 class="text-xl font-bold gradient-text">Empiria</h1>
+      </a>
+      <div class="flex items-center space-x-4">
+        <a href="/dashboard" class="text-slate-400 hover:text-white transition-colors text-sm">← Dashboard</a>
+        <img src="https://cdn.discordapp.com/avatars/<%= user.id %>/<%= user.avatar %>.png" class="w-9 h-9 rounded-full border-2 border-[#7289DA]">
+      </div>
+    </div>
+  </nav>
+
+  <main class="container mx-auto mt-10 px-4 pb-16">
+    <h2 class="text-3xl font-extrabold mb-8 flex items-center gap-3">
+      <i class="fas fa-sliders-h text-[#7289DA]"></i>
+      <span class="gradient-text">Bot Control Panel</span>
+      <span class="text-xs font-normal text-slate-500 ml-2">Owner Only</span>
+    </h2>
+
+    <!-- Status + Controls -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+
+      <!-- Status card -->
+      <div class="glass p-6 rounded-2xl col-span-1">
+        <p class="text-slate-400 text-sm mb-2 uppercase tracking-wider">Bot Status</p>
+        <div id="status-badge" class="flex items-center gap-3 mb-4">
+          <span id="status-dot" class="w-3 h-3 rounded-full <%=
+            status === 'running'  ? 'bg-green-500 animate-pulse' :
+            status === 'starting' ? 'bg-yellow-400 animate-pulse' :
+            status === 'stopping' ? 'bg-orange-400 animate-pulse' :
+            status === 'error'    ? 'bg-red-500' : 'bg-slate-500'
+          %>"></span>
+          <span id="status-text" class="text-lg font-bold capitalize"><%= status %></span>
+        </div>
+
+        <% if (stats.tag) { %>
+          <p class="text-slate-400 text-sm mb-1">🤖 <span class="text-white"><%= stats.tag %></span></p>
+        <% } %>
+        <div class="grid grid-cols-2 gap-3 mt-4 text-sm">
+          <div class="bg-white/5 rounded-xl p-3 text-center">
+            <p class="text-2xl font-bold text-[#7289DA]" id="stat-guilds"><%= stats.guilds %></p>
+            <p class="text-slate-400 text-xs mt-1">Servers</p>
+          </div>
+          <div class="bg-white/5 rounded-xl p-3 text-center">
+            <p class="text-2xl font-bold text-emerald-400" id="stat-users"><%= stats.users %></p>
+            <p class="text-slate-400 text-xs mt-1">Members</p>
+          </div>
+          <div class="bg-white/5 rounded-xl p-3 text-center">
+            <p class="text-2xl font-bold text-purple-400" id="stat-ping"><%= stats.ping %>ms</p>
+            <p class="text-slate-400 text-xs mt-1">Ping</p>
+          </div>
+          <div class="bg-white/5 rounded-xl p-3 text-center">
+            <p class="text-2xl font-bold text-sky-400" id="stat-commands"><%= stats.commands %></p>
+            <p class="text-slate-400 text-xs mt-1">Commands</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Controls card -->
+      <div class="glass p-6 rounded-2xl col-span-1 lg:col-span-2 flex flex-col justify-between">
+        <p class="text-slate-400 text-sm mb-4 uppercase tracking-wider">Controls</p>
+        <div class="grid grid-cols-3 gap-4 mb-6">
+          <button onclick="botAction('start')"
+            class="flex flex-col items-center justify-center gap-2 p-6 bg-green-500/15 hover:bg-green-500/30 border border-green-500/30 rounded-2xl transition-all group"
+            title="Start the bot">
+            <i class="fas fa-play text-green-400 text-2xl group-hover:scale-110 transition-transform"></i>
+            <span class="text-green-400 font-semibold text-sm">Start</span>
+          </button>
+          <button onclick="botAction('stop')"
+            class="flex flex-col items-center justify-center gap-2 p-6 bg-red-500/15 hover:bg-red-500/30 border border-red-500/30 rounded-2xl transition-all group"
+            title="Stop the bot">
+            <i class="fas fa-stop text-red-400 text-2xl group-hover:scale-110 transition-transform"></i>
+            <span class="text-red-400 font-semibold text-sm">Stop</span>
+          </button>
+          <button onclick="botAction('restart')"
+            class="flex flex-col items-center justify-center gap-2 p-6 bg-yellow-500/15 hover:bg-yellow-500/30 border border-yellow-500/30 rounded-2xl transition-all group"
+            title="Restart the bot">
+            <i class="fas fa-redo text-yellow-400 text-2xl group-hover:scale-110 transition-transform"></i>
+            <span class="text-yellow-400 font-semibold text-sm">Restart</span>
+          </button>
+        </div>
+
+        <!-- Notification area -->
+        <div id="notif" class="hidden rounded-xl px-4 py-3 text-sm font-medium"></div>
+
+        <div class="mt-4 p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl text-xs text-blue-200/70">
+          <i class="fas fa-info-circle mr-2"></i>
+          The bot auto-starts when the server boots. It will keep running until you click <strong>Stop</strong>.
+          Clicking <strong>Start</strong> again after a stop will re-connect it to Discord.
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Logs -->
+    <div class="glass p-6 rounded-2xl">
+      <div class="flex justify-between items-center mb-4">
+        <p class="text-slate-400 text-sm uppercase tracking-wider"><i class="fas fa-terminal mr-2"></i>Live Logs</p>
+        <div class="flex gap-3">
+          <button onclick="clearLogs()" class="text-xs text-slate-400 hover:text-white transition-colors"><i class="fas fa-trash mr-1"></i>Clear</button>
+          <label class="flex items-center gap-1 text-xs text-slate-400 cursor-pointer">
+            <input type="checkbox" id="auto-scroll" checked class="rounded">
+            Auto-scroll
+          </label>
+        </div>
+      </div>
+      <div id="logbox" class="bg-black/40 rounded-xl p-4 space-y-0.5">
+        <% logs.forEach(log => { %>
+          <div class="log-line <%= log.text.includes('[ERR]') ? 'err' : log.text.startsWith('✅') || log.text.startsWith('🤖') ? 'ok' : log.text.startsWith('⚠️') || log.text.startsWith('🔹') ? 'warn' : '' %>">
+            <span class="text-slate-600 select-none mr-2"><%= new Date(log.t).toLocaleTimeString() %></span><%= log.text %>
+          </div>
+        <% }); %>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    let polling = true;
+
+    // ── Bot action (start / stop / restart) ──────────────────────────────────
+    async function botAction(action) {
+      const notif = document.getElementById("notif");
+      notif.className = "rounded-xl px-4 py-3 text-sm font-medium bg-blue-500/20 border border-blue-500/30 text-blue-200";
+      notif.textContent = `Sending ${action} request...`;
+
+      try {
+        const res  = await fetch(`/api/bot/${action}`, { method: "POST" });
+        const data = await res.json();
+        notif.textContent = data.message || `Done — status: ${data.status}`;
+        notif.className   = data.success
+          ? "rounded-xl px-4 py-3 text-sm font-medium bg-green-500/20 border border-green-500/30 text-green-300"
+          : "rounded-xl px-4 py-3 text-sm font-medium bg-red-500/20 border border-red-500/30 text-red-300";
+        updateStatusBadge(data.status);
+        setTimeout(() => { notif.className = "hidden"; }, 5000);
+      } catch (e) {
+        notif.textContent = `Error: ${e.message}`;
+        notif.className   = "rounded-xl px-4 py-3 text-sm font-medium bg-red-500/20 border border-red-500/30 text-red-300";
+      }
+    }
+
+    // ── Update status badge ───────────────────────────────────────────────────
+    function updateStatusBadge(status) {
+      const dot  = document.getElementById("status-dot");
+      const text = document.getElementById("status-text");
+      text.textContent = status;
+
+      dot.className = "w-3 h-3 rounded-full " + ({
+        running:  "bg-green-500 animate-pulse",
+        starting: "bg-yellow-400 animate-pulse",
+        stopping: "bg-orange-400 animate-pulse",
+        error:    "bg-red-500",
+      }[status] || "bg-slate-500");
+    }
+
+    // ── Log rendering ─────────────────────────────────────────────────────────
+    let lastLogCount = document.getElementById("logbox").children.length;
+
+    function renderLog(log) {
+      const cls = log.text.includes("[ERR]") ? "err"
+        : (log.text.startsWith("✅") || log.text.startsWith("🤖")) ? "ok"
+        : (log.text.startsWith("⚠️") || log.text.startsWith("🔹")) ? "warn"
+        : "";
+      const d = document.createElement("div");
+      d.className = `log-line ${cls}`;
+      d.innerHTML = `<span class="text-slate-600 select-none mr-2">${new Date(log.t).toLocaleTimeString()}</span>${escHtml(log.text)}`;
+      return d;
+    }
+
+    function escHtml(str) {
+      return str.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+    }
+
+    function clearLogs() {
+      document.getElementById("logbox").innerHTML = "";
+      lastLogCount = 0;
+    }
+
+    // ── Poll status + logs every 2s ───────────────────────────────────────────
+    async function pollStatus() {
+      if (!polling) return;
+      try {
+        const res  = await fetch("/api/bot/status");
+        const data = await res.json();
+
+        updateStatusBadge(data.status);
+
+        const s = data.stats || {};
+        document.getElementById("stat-guilds").textContent   = s.guilds   ?? "--";
+        document.getElementById("stat-users").textContent    = s.users    ?? "--";
+        document.getElementById("stat-ping").textContent     = (s.ping != null ? s.ping + "ms" : "--");
+        document.getElementById("stat-commands").textContent = s.commands ?? "--";
+
+        const box  = document.getElementById("logbox");
+        const logs = data.logs || [];
+        if (logs.length > lastLogCount) {
+          const newLogs = logs.slice(lastLogCount);
+          newLogs.forEach(l => box.appendChild(renderLog(l)));
+          if (document.getElementById("auto-scroll").checked) {
+            box.scrollTop = box.scrollHeight;
+          }
+          lastLogCount = logs.length;
+        }
+      } catch {}
+      setTimeout(pollStatus, 2000);
+    }
+
+    pollStatus();
+    // Auto-scroll initial logs
+    const box = document.getElementById("logbox");
+    if (box.scrollHeight > box.clientHeight) box.scrollTop = box.scrollHeight;
+  </script>
+</body>
+</html>

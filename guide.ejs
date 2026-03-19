@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guide | Empiria 3.0</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    .glass { background: rgba(255,255,255,0.05); backdrop-filter:blur(10px); border: 1px solid rgba(255,255,255,0.1); }
+    .gradient-text { background: linear-gradient(90deg,#7289DA,#a78bfa); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+    .toc-link { transition: all 0.2s; }
+    .toc-link:hover { color: #7289DA; padding-left: 8px; }
+    code { background: #1e293b; padding: 2px 6px; border-radius: 4px; color: #7289DA; font-size: 0.875em; }
+    pre { background: #1e293b; padding: 16px; border-radius: 8px; overflow-x: auto; }
+    pre code { background: none; padding: 0; color: #a78bfa; }
+    h2 { border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; margin-bottom: 16px; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-thumb { background: #7289DA; border-radius: 3px; }
+  </style>
+</head>
+<body class="bg-[#0f172a] text-slate-200 font-sans min-h-screen">
+
+  <!-- NAV -->
+  <nav class="glass sticky top-0 z-50 p-4">
+    <div class="container mx-auto flex justify-between items-center">
+      <a href="/" class="flex items-center space-x-3">
+        <div class="w-10 h-10 bg-[#7289DA] rounded-xl flex items-center justify-center"><i class="fas fa-bolt text-white"></i></div>
+        <h1 class="text-xl font-bold gradient-text">Empiria</h1>
+      </a>
+      <div class="hidden md:flex space-x-6 items-center">
+        <a href="/" class="text-slate-400 hover:text-white">Home</a>
+        <a href="/commands" class="text-slate-400 hover:text-white">Commands</a>
+        <a href="/guide" class="text-white font-semibold">Guide</a>
+        <a href="https://discord.gg/ecz" target="_blank" class="bg-[#7289DA]/20 text-[#7289DA] hover:bg-[#7289DA]/30 px-5 py-2 rounded-lg font-medium">discord.gg/ecz</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mx-auto px-4 py-12 flex flex-col lg:flex-row gap-8">
+
+    <!-- TABLE OF CONTENTS -->
+    <aside class="lg:w-64 shrink-0">
+      <div class="glass rounded-2xl p-5 sticky top-24">
+        <h3 class="font-bold text-sm uppercase tracking-widest text-slate-400 mb-4">Contents</h3>
+        <nav class="space-y-1 text-sm">
+          <a href="#getting-started" class="toc-link block text-slate-300 py-1">Getting Started</a>
+          <a href="#moderation" class="toc-link block text-slate-300 py-1">🛡️ Moderation</a>
+          <a href="#economy" class="toc-link block text-slate-300 py-1">💰 Economy</a>
+          <a href="#jobs" class="toc-link block text-slate-300 py-1">👔 Jobs (50+)</a>
+          <a href="#farming" class="toc-link block text-slate-300 py-1">🚜 Farming</a>
+          <a href="#gambling" class="toc-link block text-slate-300 py-1">🎲 Gambling</a>
+          <a href="#giveaways" class="toc-link block text-slate-300 py-1">🎉 Giveaways</a>
+          <a href="#tickets" class="toc-link block text-slate-300 py-1">🎫 Tickets</a>
+          <a href="#leveling" class="toc-link block text-slate-300 py-1">⭐ Leveling</a>
+          <a href="#clans" class="toc-link block text-slate-300 py-1">⚔️ Clans</a>
+          <a href="#government" class="toc-link block text-slate-300 py-1">🏛️ Government</a>
+          <a href="#automod" class="toc-link block text-slate-300 py-1">🤖 AutoMod</a>
+          <a href="#invites" class="toc-link block text-slate-300 py-1">📨 Invites</a>
+          <a href="#events" class="toc-link block text-slate-300 py-1">📅 Events</a>
+          <a href="#reaction-roles" class="toc-link block text-slate-300 py-1">🎭 Reaction Roles</a>
+        </nav>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 space-y-12 max-w-3xl">
+
+      <div class="text-center lg:text-left">
+        <h1 class="text-4xl font-extrabold mb-2">Empiria 3.0 <span class="gradient-text">Complete Guide</span></h1>
+        <p class="text-slate-400">Everything you need to know about running your server with Empiria.</p>
+        <div class="mt-4 flex flex-wrap gap-3">
+          <span class="bg-slate-800 px-3 py-1 rounded-lg text-sm">Prefix: <code>$</code></span>
+          <span class="bg-slate-800 px-3 py-1 rounded-lg text-sm">197 commands</span>
+          <span class="bg-slate-800 px-3 py-1 rounded-lg text-sm">Discord.js v14</span>
+          <a href="https://discord.gg/ecz" target="_blank" class="bg-[#7289DA]/20 text-[#7289DA] px-3 py-1 rounded-lg text-sm">discord.gg/ecz</a>
+        </div>
+      </div>
+
+      <!-- GETTING STARTED -->
+      <section id="getting-started" class="glass rounded-2xl p-6">
+        <h2 class="text-2xl font-bold mb-4">🚀 Getting Started</h2>
+        <p class="text-slate-300 mb-4">All commands use the <code>$</code> prefix. Type <code>$help</code> in Discord to open the interactive command browser.</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="bg-slate-800/60 rounded-xl p-4">
+            <p class="text-sm font-bold text-[#7289DA] mb-1">Browse commands</p>
+            <code>$help</code>
+          </div>
+          <div class="bg-slate-800/60 rounded-xl p-4">
+            <p class="text-sm font-bold text-[#7289DA] mb-1">Search a command</p>
+            <code>$help &lt;name&gt;</code>
+          </div>
+          <div class="bg-slate-800/60 rounded-xl p-4">
+            <p class="text-sm font-bold text-[#7289DA] mb-1">Browse a module</p>
+            <code>$help economy</code>
+          </div>
+          <div class="bg-slate-800/60 rounded-xl p-4">
+            <p class="text-sm font-bold text-[#7289DA] mb-1">Check your balance</p>
+            <code>$balance</code>
+          </div>
+        </div>
+      </section>
+
+      <!-- MODERATION -->
+      <section id="moderation" class="glass rounded-2xl p-6">
+        <h2 class="text-2xl font-bold mb-4">🛡️ Moderation</h2>
+        <p class="text-slate-300 mb-4">Full moderation suite with case tracking and auto-escalation.</p>
+        <div class="space-y-2 text-sm">
+          <div class="flex gap-2"><code>$warn @user [reason]</code><span class="text-slate-400">— Warn a member (auto-escalates at 3/5/7)</span></div>
+          <div class="flex gap-2"><code>$warnlist @user</code><span class="text-slate-400">— View all warnings</span></div>
+          <div class="flex gap-2"><code>$removewarn @user [id]</code><span class="text-slate-400">— Remove a warning</span></div>
+          <div class="flex gap-2"><code>$ban @user [reason]</code><span class="text-slate-400">— Ban a member</span></div>
+          <div class="flex gap-2"><code>$kick @user [reason]</code><span class="text-slate-400">— Kick a member</span></div>
+          <div class="flex gap-2"><code>$timeout @user [duration]</code><span class="text-slate-400">— Timeout a member</span></div>
+          <div class="flex gap-2"><code>$mute @user</code><span class="text-slate-400">— Mute a member</span></div>
+          <div class="flex gap-2"><code>$clear [amount]</code><span class="text-slate-400">— Bulk delete messages</span></div>
+          <div class="flex gap-2"><code>$lock / $unlock</code><span class="text-slate-400">— Lock/unlock a channel</span></div>
+          <div class="flex gap-2"><code>$nuke</code><span class="text-slate-400">— Nuke a channel (confirm required)</span></div>
+          <div class="flex gap-2"><code>$slowmode [seconds]</code><span class="text-slate-400">— Set slowmode</span></div>
+          <div class="flex gap-2"><code>$logs</code><span class="text-slate-400">— View moderation log history</span></div>
+        </div>
+      </section>
+
+      <!-- ECONOMY -->
+      <section id="economy" class="glass rounded-2xl p-6">
+        <h2 class="text-2xl font-bold mb-4">💰 Economy</h2>
+        <p class="text-slate-300 mb-4">Full economy ecosystem with wallet, bank, daily rewards and more.</p>
+        <div class="space-y-2 text-sm">
+          <div class="flex gap-2"><code>$balance</code><span class="text-slate-400">— Check wallet & bank</span></div>
+          <div class="flex gap-2"><code>$deposit [amount]</code><span class="text-slate-400">— Deposit money to bank</span></div>
+          <div class="flex gap-2"><code>$withdraw [amount]</code><span class="text-slate-400">— Withdraw from bank</span></div>
+          <div class="flex gap-2"><code>$pay @user [amount]</code><span class="text-slate-400">— Send money to someone</span></div>
+          <div class="flex gap-2"><code>$daily</code><span class="text-slate-400">— Claim daily reward</span></div>
+          <div class="flex gap-2"><code>$work</code><span class="text-slate-400">— Work for money (based on job)</span></div>
+          <div class="flex gap-2"><code>$crime</code><span class="text-slate-400">— Commit a crime (risky!)</span></div>
+          <div class="flex gap-2"><code>$rob @user</code><span class="text-slate-400">— Rob another user</span></div>
+          <div class="flex gap-2"><code>$shop</code><span class="text-slate-400">— View the item shop</span></div>
+          <div class="flex gap-2"><code>$inventory</code><span class="text-slate-400">— View your inventory</span></div>
+          <div class="flex gap-2"><code>$leaderboard</code><span class="text-slate-400">— View richest members</span></div>
+          <div class="flex gap-2"><code>$stats [@user]</code><span class="text-slate-400">— View member economy stats</span></div>
+        </div>
+      </section>
+
+      <!-- JOBS -->
+      <section id="jobs" class="glass rounded-2xl p-6">
+        <h2 class="text-2xl font-bold mb-4">👔 Jobs (50+)</h2>
+        <p class="text-slate-300 mb-3">Apply for a job and earn salary every time you <code>$work</code>.</p>
+        <code class="block mb-3">$jobs</code><p class="text-slate-400 text-sm mb-4">— Lists all 50+ available jobs with salary and level requirements</p>
+        <code class="block mb-3">$jobs &lt;jobname&gt;</code><p class="text-slate-400 text-sm mb-4">— Apply for a job</p>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm">
+          <% [["⛏️","miner","$500"],["💻","programmer","$1200"],["⚕️","doctor","$2500"],["👨‍🍳","chef","$800"],["✈️","pilot","$4000"],["👔","ceo","$5000"],["🚀","astronaut","$6000"],["⚖️","lawyer","$3000"],["🔬","scientist","$2800"],["⚔️","knight","$2800"],["🎨","artist","$1000"],["🎣","fisherman","$900"]].forEach(j => { %>
+          <div class="bg-slate-800/60 rounded-lg px-3 py-2"><%= j[0] %> <span class="text-[#7289DA] font-mono text-xs"><%= j[1] %></span> <span class="text-slate-400 text-xs"><%= j[2] %>/shift</span></div>
+          <% }); %>
+          <div class="bg-slate-800/60 rounded-lg px-3 py-2 col-span-1 text-slate-500 text-xs flex items-center">+ 38 more jobs...</div>
+        </div>
+      </section>
+
+      <!-- FARMING -->
+      <section id="farming" class="glass rounded-2xl p-6">
+        <h2 class="text-2xl font-bold mb-4">🚜 Farming</h2>
+        <p class="text-slate-300 mb-4">Buy fields, plant seeds, and harvest crops for profit.</p>
+        <div class="space-y-2 text-sm">
+          <div class="flex gap-2"><code>$myfarm</code><span class="text-slate-400">— View your farm (fields, seeds, crops)</span></div>
+          <div class="flex gap-2"><code>$farmfieldbuy</code><span class="text-slate-400">— Buy a farm field ($3000)</span></div>
+          <div class="flex gap-2"><code>$farmshop</code><span class="text-slate-400">— View available seeds to buy</span></div>
+          <div class="flex gap-2"><code>$plant &lt;seed&gt;</code><span class="text-slate-400">— Plant seeds on your fields</span></div>
+          <div class="flex gap-2"><code>$harvest</code><span class="text-slate-400">— Harvest ready crops for money</span></div>
+        </div>
+      </section>
+
+      <!-- GAMBLING -->
+      <section id="gambling" class="glass rounded-2xl p-6">
+        <h2 class="text-2xl font-bold mb-4">🎲 Gambling</h2>
+        <p class="text-slate-300 mb-4">Risk your coins in various games. All have cooldowns and max bets.</p>
+        <div class="space-y-2 text-sm">
+          <div class="flex gap-2"><code>$blackjack &lt;bet&gt;</code><span class="text-slate-400">— Play blackjack vs the dealer</span></div>
+          <div class="flex gap-2"><code>$coinflip &lt;bet&gt;</code><span class="text-slate-400">— Flip a coin</span></div>
+          <div class="flex gap-2"><code>$coinflip_vs @user &lt;bet&gt;</code><span class="text-slate-400">— Challenge someone to coinflip</span></div>
+          <div class="flex gap-2"><code>$dice &lt;bet&gt; &lt;num1&gt; &lt;num2&gt;</code><span class="text-slate-400">— Pick 2 different numbers (1-6)</span></div>
+          <div class="flex gap-2"><code>$dice_vs @user &lt;bet&gt;</code><span class="text-slate-400">— Challenge someone to a dice duel</span></div>
+          <div class="flex gap-2"><code>$slots &lt;bet&gt;</code><span class="text-slate-400">— Spin the slot machine</span></div>
+          <div class="flex gap-2"><code>$roulette &lt;bet&gt;</code><span class="text-slate-400">— Spin the roulette wheel</span></div>
+        </div>
+      </section>
+
+      <!-- GIVEAWAYS -->
+      <section id="giveaways" class="glass rounded-2xl p-6">
+        <h2 class="text-2xl font-bold mb-4">🎉 Giveaways</h2>
+        <p class="text-slate-300 mb-4">Run giveaways with requirements for invites, level and role.</p>
+        <div class="space-y-2 text-sm">
+          <div class="flex gap-2"><code>$gstart &lt;time&gt; &lt;winners&gt; &lt;prize&gt;</code><span class="text-slate-400">— Start a giveaway</span></div>
+          <div class="flex gap-2"><code class="text-xs">$gstart 24h 1 Nitro --invites 3 --level 5</code><span class="text-slate-400 text-xs">— With requirements</span></div>
+          <div class="flex gap-2"><code>$gend &lt;messageId&gt;</code><span class="text-slate-400">— End a giveaway early</span></div>
+          <div class="flex gap-2"><code>$greroll &lt;messageId&gt;</code><span class="text-slate-400">— Reroll a winner</span></div>
+        </div>
+      </section>
+
+      <!-- TICKETS -->
+      <section id="tickets" class="glass rounded-2xl p-6">
+        <h2 class="text-2xl font-bold mb-4">🎫 Ticket System</h2>
+        <p class="text-slate-300 mb-4">Professional support ticket system with categories and staff claiming.</p>
+        <div class="space-y-2 text-sm">
+          <div class="flex gap-2"><code>$ticket setup</code><span class="text-slate-400">— Setup ticket system in a channel</span></div>
+          <div class="flex gap-2"><span class="text-slate-400">Members click the panel → select category → ticket opens</span></div>
+          <div class="flex gap-2"><span class="text-slate-400">Staff click <strong class="text-white">Claim</strong> to take ownership of a ticket</span></div>
+          <div class="flex gap-2"><span class="text-slate-400">Click <strong class="text-white">Close</strong> to close and archive</span></div>
+          <div class="mt-2 text-slate-400">Categories: Support · Report · Appeal · Partnership</div>
+        </div>
+      </section>
+
+      <!-- LEVELING -->
+      <section id="leveling" class="glass rounded-2xl p-6">
+        <h2 class="text-2xl font-bold mb-4">⭐ Leveling System</h2>
+        <p class="text-slate-300 mb-4">Earn XP automatically by chatting. Level up to unlock higher-paying jobs.</p>
+        <div class="space-y-2 text-sm">
+          <div class="flex gap-2"><span class="text-slate-400">+5 XP per message sent</span></div>
+          <div class="flex gap-2"><span class="text-slate-400">100 XP per level</span></div>
+          <div class="flex gap-2"><code>$rank</code><span class="text-slate-400">— View your current level and XP</span></div>
+          <div class="flex gap-2"><code>$leaderboard xp</code><span class="text-slate-400">— Top leveled members</span></div>
+          <div class="flex gap-2"><span class="text-slate-400">Level-up notification sent automatically in channel</span></div>
+        </div>
+      </section>
+
+      <!-- CLANS -->
+      <section id="clans" class="glass rounded-2xl p-6">
+        <h2 class="text-2xl font-bold mb-4">⚔️ Clans</h2>
+        <p class="text-slate-300 mb-4">Create and lead a clan. Fight wars, build a bank, and dominate the leaderboard.</p>
+        <div class="space-y-2 text-sm">
+          <div class="flex gap-2"><code>$clan create &lt;name&gt;</code><span class="text-slate-400">— Create a clan</span></div>
+          <div class="flex gap-2"><code>$clan invite @user</code><span class="text-slate-400">— Invite someone</span></div>
+          <div class="flex gap-2"><code>$clan info</code><span class="text-slate-400">— View your clan</span></div>
+          <div class="flex gap-2"><code>$clan deposit &lt;amount&gt;</code><span class="text-slate-400">— Deposit into clan bank</span></div>
+          <div class="flex gap-2"><code>$clan upgrade</code><span class="text-slate-400">— Upgrade clan level</span></div>
+          <div class="flex gap-2"><code>$clan war @clan</code><span class="text-slate-400">— Declare a clan war</span></div>
+        </div>
+      </section>
+
+      <!-- GOVERNMENT -->
+      <section id="government" class="glass rounded-2xl p-6">
+        <h2 class="text-2xl font-bold mb-4">🏛️ Government System</h2>
+        <p class="text-slate-300 mb-4">Real-life server government — taxation, budgeting, laws and benefits.</p>
+        <div class="space-y-2 text-sm">
+          <div class="flex gap-2"><code>$govsetup</code><span class="text-slate-400">— Initialize the government</span></div>
+          <div class="flex gap-2"><code>$budget</code><span class="text-slate-400">— View current budget allocations</span></div>
+          <div class="flex gap-2"><code>$treasury</code><span class="text-slate-400">— Check the treasury balance</span></div>
+          <div class="flex gap-2"><code>$laws</code><span class="text-slate-400">— View active server laws</span></div>
+          <div class="flex gap-2"><code>$fine @user &lt;amount&gt;</code><span class="text-slate-400">— Fine a member</span></div>
+          <div class="flex gap-2"><code>$govbenefits</code><span class="text-slate-400">— View government benefits</span></div>
+          <div class="flex gap-2"><span class="text-slate-400 text-xs">Taxes auto-collected from work, gambling & crime</span></div>
+        </div>
+      </section>
+
+      <!-- AUTOMOD -->
+      <section id="automod" class="glass rounded-2xl p-6">
+        <h2 class="text-2xl font-bold mb-4">🤖 AutoMod</h2>
+        <p class="text-slate-300 mb-4">Automatically moderate your server with 6 detection types.</p>
+        <div class="space-y-2 text-sm">
+          <div class="flex gap-2"><code>$automod</code><span class="text-slate-400">— View automod settings</span></div>
+          <div class="flex gap-2"><code>$automod enable &lt;type&gt;</code><span class="text-slate-400">— Enable a detection type</span></div>
+          <div class="flex gap-2"><code>$automod disable &lt;type&gt;</code><span class="text-slate-400">— Disable a detection type</span></div>
+          <div class="mt-2 text-slate-400">Detection types: <code>spam</code> · <code>invites</code> · <code>scam</code> · <code>capslock</code> · <code>emojis</code> · <code>blacklist</code></div>
+          <div class="text-slate-400">Punishment ladder: warn → timeout → kick → ban</div>
+        </div>
+      </section>
+
+      <!-- INVITES -->
+      <section id="invites" class="glass rounded-2xl p-6">
+        <h2 class="text-2xl font-bold mb-4">📨 Invite Tracker</h2>
+        <p class="text-slate-300 mb-4">Track who invited who, with fake invite detection.</p>
+        <div class="space-y-2 text-sm">
+          <div class="flex gap-2"><code>$invites [@user]</code><span class="text-slate-400">— Check invite count</span></div>
+          <div class="flex gap-2"><code>$inviteleaderboard</code><span class="text-slate-400">— Top inviters in the server</span></div>
+        </div>
+      </section>
+
+      <!-- EVENTS -->
+      <section id="events" class="glass rounded-2xl p-6">
+        <h2 class="text-2xl font-bold mb-4">📅 Events</h2>
+        <p class="text-slate-300 mb-4">Host movie nights, gaming sessions, tournaments and more.</p>
+        <div class="space-y-2 text-sm">
+          <div class="flex gap-2"><code>$event create &lt;name&gt; &lt;type&gt; &lt;time&gt;</code><span class="text-slate-400">— Create an event</span></div>
+          <div class="flex gap-2"><code>$event list</code><span class="text-slate-400">— View upcoming events</span></div>
+          <div class="flex gap-2"><code>$event join &lt;id&gt;</code><span class="text-slate-400">— Join an event</span></div>
+          <div class="flex gap-2"><code>$event start &lt;id&gt;</code><span class="text-slate-400">— Start event (host only)</span></div>
+          <div class="flex gap-2"><code>$event end &lt;id&gt;</code><span class="text-slate-400">— End event and show stats</span></div>
+        </div>
+      </section>
+
+      <!-- REACTION ROLES -->
+      <section id="reaction-roles" class="glass rounded-2xl p-6">
+        <h2 class="text-2xl font-bold mb-4">🎭 Reaction Roles</h2>
+        <p class="text-slate-300 mb-4">Let members self-assign roles via interactive dropdown panels.</p>
+        <div class="space-y-2 text-sm">
+          <div class="flex gap-2"><code>$rrole panel</code><span class="text-slate-400">— Create a reaction role panel</span></div>
+          <div class="flex gap-2"><code>$rrole add &lt;msgId&gt; @role :emoji:</code><span class="text-slate-400">— Add a role to the panel</span></div>
+          <div class="flex gap-2"><code>$rrole remove &lt;msgId&gt; @role</code><span class="text-slate-400">— Remove a role from the panel</span></div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="mt-16 pb-8 text-center text-slate-500 text-sm border-t border-slate-800/50 pt-8">
+    <p>© 2026 Empiria 3.0 &nbsp;|&nbsp; <a href="https://discord.gg/ecz" class="text-[#7289DA] hover:underline">discord.gg/ecz</a> &nbsp;|&nbsp; Prefix: <code>$</code></p>
+  </footer>
+</body>
+</html>

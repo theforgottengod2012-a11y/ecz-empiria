@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Commands | Empiria 3.0</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    .glass { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
+    .gradient-text { background: linear-gradient(90deg,#7289DA,#a78bfa); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+    .cmd-card { transition: all 0.2s; }
+    .cmd-card:hover { background: rgba(114,137,218,0.12); transform: translateX(4px); }
+    .category-tab.active { background: #7289DA; color: #fff; }
+    .category-tab { cursor: pointer; transition: all 0.2s; }
+    .category-section { display: none; }
+    .category-section.active { display: block; }
+    #search-results { display: none; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: #7289DA; border-radius: 3px; }
+  </style>
+</head>
+<body class="bg-[#0f172a] text-slate-200 font-sans min-h-screen">
+
+  <!-- NAV -->
+  <nav class="glass sticky top-0 z-50 p-4">
+    <div class="container mx-auto flex justify-between items-center">
+      <a href="/" class="flex items-center space-x-3">
+        <div class="w-10 h-10 bg-[#7289DA] rounded-xl flex items-center justify-center shadow-lg shadow-[#7289DA]/20">
+          <i class="fas fa-bolt text-white"></i>
+        </div>
+        <h1 class="text-xl font-bold gradient-text">Empiria</h1>
+      </a>
+      <div class="hidden md:flex space-x-6 items-center">
+        <a href="/" class="text-slate-400 hover:text-white transition-colors">Home</a>
+        <a href="/commands" class="text-white font-semibold">Commands</a>
+        <a href="/guide" class="text-slate-400 hover:text-white transition-colors">Guide</a>
+        <a href="https://discord.gg/ecz" target="_blank" class="bg-[#7289DA]/20 text-[#7289DA] hover:bg-[#7289DA]/30 px-5 py-2 rounded-lg font-medium transition-all">discord.gg/ecz</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container mx-auto px-4 py-12">
+
+    <!-- HEADER -->
+    <div class="text-center mb-10">
+      <h2 class="text-4xl font-extrabold mb-3">Command <span class="gradient-text">Reference</span></h2>
+      <p class="text-slate-400 text-lg">All <strong class="text-white"><%= totalCommands %></strong> prefix commands for Empiria 3.0 — prefix: <code class="bg-slate-800 px-2 py-1 rounded text-[#7289DA]">$</code></p>
+    </div>
+
+    <!-- SEARCH BAR -->
+    <div class="max-w-xl mx-auto mb-10 relative">
+      <input id="cmd-search" type="text" placeholder="🔍  Search commands..." 
+        class="w-full bg-slate-800 border border-slate-700 rounded-xl px-5 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-[#7289DA] transition-all text-base">
+      <span class="absolute right-4 top-3.5 text-slate-500 text-sm">ESC to clear</span>
+    </div>
+
+    <!-- SEARCH RESULTS -->
+    <div id="search-results" class="mb-8">
+      <div class="glass rounded-2xl p-6">
+        <h3 class="text-lg font-bold mb-4 text-[#7289DA]">🔍 Search Results</h3>
+        <div id="search-list" class="space-y-2"></div>
+      </div>
+    </div>
+
+    <!-- CATEGORY TABS -->
+    <div id="main-content">
+      <div class="flex flex-wrap gap-2 mb-6" id="category-tabs">
+        <% Object.keys(categories).sort().forEach((cat, i) => { %>
+        <button onclick="showCat('<%= cat %>')" id="tab-<%= cat %>"
+          class="category-tab <%= i === 0 ? 'active' : '' %> glass px-4 py-2 rounded-lg text-sm font-medium hover:text-white">
+          <%= catMeta[cat] ? catMeta[cat].emoji : '📌' %> <%= cat.charAt(0).toUpperCase() + cat.slice(1) %>
+          <span class="ml-1 text-xs opacity-60">(<%= categories[cat].length %>)</span>
+        </button>
+        <% }); %>
+      </div>
+
+      <!-- CATEGORY SECTIONS -->
+      <% Object.keys(categories).sort().forEach((cat, i) => { %>
+      <div id="section-<%= cat %>" class="category-section <%= i === 0 ? 'active' : '' %>">
+        <div class="glass rounded-2xl p-6">
+          <h3 class="text-xl font-bold mb-1 flex items-center gap-2">
+            <%= catMeta[cat] ? catMeta[cat].emoji : '📌' %>
+            <%= cat.charAt(0).toUpperCase() + cat.slice(1) %>
+            <span class="text-sm text-slate-400 font-normal ml-2"><%= catMeta[cat] ? catMeta[cat].desc : '' %></span>
+          </h3>
+          <p class="text-slate-400 text-sm mb-4"><%= categories[cat].length %> commands</p>
+          <div class="space-y-2">
+            <% categories[cat].forEach(cmd => { %>
+            <div class="cmd-card rounded-xl px-4 py-3 border border-slate-700/50">
+              <div class="flex flex-col sm:flex-row sm:items-center gap-1">
+                <div class="flex items-center gap-2 min-w-[180px]">
+                  <code class="text-[#7289DA] font-bold text-sm">$<%= cmd.name %></code>
+                  <% if (cmd.aliases && cmd.aliases.length) { %>
+                  <span class="text-xs text-slate-500">(<%= cmd.aliases.map(a=>'$'+a).join(', ') %>)</span>
+                  <% } %>
+                </div>
+                <div class="flex-1">
+                  <span class="text-slate-300 text-sm"><%= cmd.description || 'No description' %></span>
+                </div>
+                <% if (cmd.usage) { %>
+                <div>
+                  <code class="text-xs bg-slate-800 px-2 py-1 rounded text-slate-400"><%= cmd.usage %></code>
+                </div>
+                <% } %>
+              </div>
+            </div>
+            <% }); %>
+          </div>
+        </div>
+      </div>
+      <% }); %>
+    </div>
+
+  </main>
+
+  <footer class="mt-16 pb-8 text-center text-slate-500 text-sm border-t border-slate-800/50 pt-8">
+    <p>© 2026 Empiria 3.0 &nbsp;|&nbsp; <a href="https://discord.gg/ecz" class="text-[#7289DA] hover:underline">discord.gg/ecz</a></p>
+  </footer>
+
+  <script>
+    // ─── Category Tabs ──────────────────────────────────────────────────────
+    const categories = <%- JSON.stringify(Object.keys(categories)) %>;
+
+    function showCat(cat) {
+      categories.forEach(c => {
+        document.getElementById('section-' + c)?.classList.remove('active');
+        document.getElementById('tab-' + c)?.classList.remove('active');
+      });
+      document.getElementById('section-' + cat)?.classList.add('active');
+      document.getElementById('tab-' + cat)?.classList.add('active');
+    }
+
+    // ─── Live Search ─────────────────────────────────────────────────────────
+    const allCommands = <%- JSON.stringify(allCommandsList) %>;
+    const searchInput = document.getElementById('cmd-search');
+    const searchResults = document.getElementById('search-results');
+    const searchList = document.getElementById('search-list');
+    const mainContent = document.getElementById('main-content');
+
+    searchInput.addEventListener('input', () => {
+      const q = searchInput.value.toLowerCase().trim();
+      if (!q) {
+        searchResults.style.display = 'none';
+        mainContent.style.display = 'block';
+        return;
+      }
+
+      const matches = allCommands.filter(c =>
+        c.name.includes(q) ||
+        (c.description && c.description.toLowerCase().includes(q)) ||
+        (c.aliases && c.aliases.some(a => a.includes(q))) ||
+        (c.module && c.module.toLowerCase().includes(q))
+      );
+
+      mainContent.style.display = 'none';
+      searchResults.style.display = 'block';
+
+      if (!matches.length) {
+        searchList.innerHTML = '<p class="text-slate-500 text-sm">No commands found for "' + q + '"</p>';
+        return;
+      }
+
+      searchList.innerHTML = matches.map(c => `
+        <div class="cmd-card rounded-xl px-4 py-3 border border-slate-700/50">
+          <div class="flex flex-col sm:flex-row sm:items-center gap-1">
+            <div class="flex items-center gap-2 min-w-[180px]">
+              <code class="text-[#7289DA] font-bold text-sm">$${c.name}</code>
+              ${c.aliases?.length ? `<span class="text-xs text-slate-500">(${c.aliases.map(a=>'$'+a).join(', ')})</span>` : ''}
+              <span class="text-xs bg-slate-700 px-1.5 py-0.5 rounded text-slate-400">${c.module || 'system'}</span>
+            </div>
+            <span class="text-slate-300 text-sm flex-1">${c.description || 'No description'}</span>
+            ${c.usage ? `<code class="text-xs bg-slate-800 px-2 py-1 rounded text-slate-400">${c.usage}</code>` : ''}
+          </div>
+        </div>
+      `).join('');
+    });
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        searchInput.value = '';
+        searchInput.dispatchEvent(new Event('input'));
+      }
+    });
+  </script>
+</body>
+</html>
