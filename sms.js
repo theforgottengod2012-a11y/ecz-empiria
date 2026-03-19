@@ -1,30 +1,24 @@
-const { sendSMS } = require('../../utils/sms');
+const axios = require('axios');
 
-module.exports = {
-  name: 'sms',
-  description: 'Send a free SMS message (TextBelt)',
-  usage: '<number> <message>',
-  module: 'fun',
-  async execute(message, args, client) {
-    if (args.length < 2) {
-      return message.reply('Please provide a phone number and a message. Usage: `!sms <number> <message>`');
-    }
+/**
+ * Sends an SMS message using the TextBelt free API.
+ * Note: The free tier of TextBelt is limited to 1 message per day per IP.
+ * @param {string} number - The phone number to send to.
+ * @param {string} message - The message content.
+ * @returns {Promise<object>} - The response from TextBelt.
+ */
+async function sendSMS(number, message) {
+  try {
+    const response = await axios.post('https://textbelt.com/text', {
+      number: number,
+      message: message,
+      key: 'textbelt',
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error sending SMS via TextBelt:', error);
+    return { success: false, error: error.message };
+  }
+}
 
-    const number = args[0];
-    const smsMessage = args.slice(1).join(' ');
-
-    const sentMsg = await message.reply('⏳ Sending SMS...');
-
-    try {
-      const result = await sendSMS(number, smsMessage);
-
-      if (result.success) {
-        await sentMsg.edit(`✅ SMS sent successfully! (Quota remaining: ${result.quotaRemaining})`);
-      } else {
-        await sentMsg.edit(`❌ Failed to send SMS: ${result.error || 'Unknown error'}. Note: TextBelt free tier is limited to 1 message per day per IP.`);
-      }
-    } catch (error) {
-      await sentMsg.edit('❌ An error occurred while sending the SMS.');
-    }
-  },
-};
+module.exports = { sendSMS };

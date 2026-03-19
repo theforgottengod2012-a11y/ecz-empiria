@@ -1,37 +1,72 @@
-const { EmbedBuilder } = require("discord.js");
-const User = require("../../database/models/User");
-const Leveling = require("../../database/models/Leveling");
+const User = require("../database/models/User");
+
+async function getLeaderboard(type, limit = 10) {
+  let users = await User.find({ isBot: { $not: { $eq: true } } });
+
+  let sorted;
+
+  switch (type) {
+    case "money":
+      sorted = users.sort((a, b) =>
+        (b.wallet + b.bank) - (a.wallet + a.bank)
+      );
+      break;
+
+    case "networth":
+      sorted = users.sort((a, b) =>
+        calculateNetworth(b) - calculateNetworth(a)
+      );
+      break;
+
+    case "level":
+      sorted = users.sort((a, b) => b.level - a.level);
+      break;
+
+    case "prestige":
+      sorted = users.sort((a, b) =>
+        (b.prestige?.level || 0) - (a.prestige?.level || 0)
+      );
+      break;
+
+    case "gamble":
+      sorted = users.sort((a, b) =>
+        (b.gambling?.totalWon || 0) - (a.gambling?.totalWon || 0)
+      );
+      break;
+
+    case "pets":
+      sorted = users.sort((a, b) =>
+        (b.pets?.ownedPets?.length || 0) -
+        (a.pets?.ownedPets?.length || 0)
+      );
+      break;
+
+    default:
+      return null;
+  }
+
+  return sorted.slice(0, limit);
+}
+
+function calculateNetworth(user) {
+  let inventoryValue = 0;
+
+  if (user.inventory) {
+    for (const item of user.inventory) {
+      inventoryValue += (item.quantity || 1) * 100; // base value
+    }
+  }
+
+  let petValue = (user.pets?.ownedPets?.length || 0) * 5000;
+
+  return (
+    user.wallet +
+    user.bank +
+    inventoryValue +
+    petValue
+  );
+}
 
 module.exports = {
-  name: "leaderboard",
-  aliases: ["lb", "top"],
-  description: "Show the top 10 richest or highest level users",
-  module: "economy",
-  async execute(message, args) {
-    const type = args[0]?.toLowerCase();
-    
-    let title, data, description;
-    
-    if (type === "xp" || type === "level") {
-      const levels = await Leveling.find({ guildId: message.guild.id })
-        .sort({ level: -1, totalXp: -1 })
-        .limit(10);
-      title = "🏆 Level Leaderboard";
-      description = levels.map((u, i) => `**${i + 1}.** <@${u.userId}> — Level ${u.level} (${u.totalXp} XP)`).join("\n");
-    } else {
-      const users = await User.find({ isBot: false })
-        .sort({ wallet: -1 })
-        .limit(10);
-      title = "🏆 Richest Leaderboard";
-      description = users.map((u, i) => `**${i + 1}.** <@${u.userId}> — 💵 $${u.wallet.toLocaleString()}`).join("\n");
-    }
-
-    const embed = new EmbedBuilder()
-      .setTitle(title)
-      .setColor(0xF1C40F)
-      .setDescription(description || "No data yet.")
-      .setFooter({ text: `Use: $leaderboard [xp/wallet] • Requested by ${message.author.tag}` });
-
-    message.reply({ embeds: [embed] });
-  }
+  getLeaderboard,
 };
