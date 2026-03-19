@@ -1,0 +1,9 @@
+{
+  "category": "Support Tickets",
+  "supportRole": "Support Team",
+  "prefix": "ticket",
+  "maxOpenTickets": 5,
+  "autoCloseAfterDays": 7,
+  "logChannel": "ticket-logs",
+  "transcriptChannel": "ticket-transcripts"
+}

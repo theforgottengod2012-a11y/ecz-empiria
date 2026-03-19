@@ -1,0 +1,15 @@
+{
+  "startingBalance": 1000,
+  "workCooldown": 3600,
+  "dailyCooldown": 86400,
+  "robCooldown": 300,
+  "gambleCooldown": 30,
+  "gamblingLimit": 10000,
+  "inviteRequirement": 3,
+  "jobPayouts": {
+    "min": 100,
+    "max": 500
+  },
+  "petCost": 500,
+  "shopItemPriceCap": 50000
+}

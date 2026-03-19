@@ -1,0 +1,10 @@
+{
+  "prefix": "!",
+  "botColor": "#FF6B6B",
+  "timezone": "UTC",
+  "language": "en",
+  "mainLogChannel": "bot-logs",
+  "errorLogChannel": "bot-errors",
+  "enableAnalytics": true,
+  "maxCommandLength": 2000
+}

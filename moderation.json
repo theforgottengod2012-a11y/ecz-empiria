@@ -1,0 +1,11 @@
+{
+  "modRole": "Moderator",
+  "adminRole": "Administrator",
+  "muteRole": "Muted",
+  "autoModEnabled": true,
+  "linkProtection": true,
+  "spamThreshold": 5,
+  "spamTimeWindow": 5000,
+  "logChannel": "mod-logs",
+  "casePrefix": "CASE"
+}
