@@ -1,25 +1,24 @@
-const Giveaway = require("../../database/models/Giveaway");
-const { EmbedBuilder } = require("discord.js");
+const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
+const os = require("os");
 
 module.exports = {
-  name: "giveaway-stats",
-  async execute(message, args, client) {
-    const active = await Giveaway.countDocuments({ ended: false });
-    const total = await Giveaway.countDocuments();
-    const winners = await Giveaway.aggregate([
-      { $match: { ended: true } },
-      { $group: { _id: null, totalWinners: { $sum: "$winners" } } }
-    ]);
+  data: new SlashCommandBuilder()
+    .setName("stats")
+    .setDescription("Display bot statistics"),
 
+  async execute(interaction) {
     const embed = new EmbedBuilder()
-      .setTitle("📊 Giveaway Statistics")
+      .setTitle("📊 Bot Statistics")
       .addFields(
-        { name: "Active Giveaways", value: active.toString(), inline: true },
-        { name: "Total Giveaways", value: total.toString(), inline: true },
-        { name: "Total Winners", value: (winners[0]?.totalWinners || 0).toString(), inline: true }
+        { name: "Servers", value: `${interaction.client.guilds.cache.size}`, inline: true },
+        { name: "Users", value: `${interaction.client.users.cache.size}`, inline: true },
+        { name: "Memory Usage", value: `${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} MB`, inline: true },
+        { name: "Platform", value: `${os.platform()}`, inline: true },
+        { name: "Node.js Version", value: `${process.version}`, inline: true }
       )
-      .setColor(0x00ae86);
+      .setColor("Blue")
+      .setTimestamp();
 
-    message.reply({ embeds: [embed] });
+    await interaction.reply({ embeds: [embed] });
   }
 };

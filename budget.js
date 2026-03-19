@@ -1,15 +1,39 @@
-const { EmbedBuilder, PermissionFlagsBits } = require("discord.js");
+const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } = require("discord.js");
 const Government = require("../../database/models/Government");
 
 module.exports = {
-  name: "budget",
-  description: "Manage government budget",
-  category: "government",
-  ownerOnly: false,
-  userPermissions: [PermissionFlagsBits.Administrator],
-  async execute(message, args) {
-    const guildId = message.guild.id;
-    const subcommand = args[0]?.toLowerCase();
+  data: new SlashCommandBuilder()
+    .setName("budget")
+    .setDescription("Manage government budget")
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+    .addSubcommand((sub) =>
+      sub.setName("view").setDescription("View the government budget")
+    )
+    .addSubcommand((sub) =>
+      sub
+        .setName("allocate")
+        .setDescription("Allocate funds to a category")
+        .addStringOption((opt) =>
+          opt
+            .setName("category")
+            .setDescription("Budget category")
+            .addChoices(
+              { name: "Infrastructure", value: "infrastructure" },
+              { name: "Healthcare", value: "healthcare" },
+              { name: "Education", value: "education" },
+              { name: "Defense", value: "defense" },
+              { name: "Welfare", value: "welfare" }
+            )
+            .setRequired(true)
+        )
+        .addIntegerOption((opt) =>
+          opt.setName("amount").setDescription("Amount to allocate").setRequired(true).setMinValue(1)
+        )
+    ),
+
+  async execute(interaction) {
+    const guildId = interaction.guild.id;
+    const subcommand = interaction.options.getSubcommand();
 
     let government = await Government.findOne({ guildId });
     if (!government) {
@@ -17,7 +41,10 @@ module.exports = {
     }
 
     if (!government.government.enabled) {
-      return message.reply("❌ Government system is not enabled.");
+      return interaction.reply({
+        content: "❌ Government system is not enabled.",
+        ephemeral: true
+      });
     }
 
     switch (subcommand) {
@@ -28,7 +55,7 @@ module.exports = {
           government.budget.defense +
           government.budget.welfare;
 
-        return message.reply({
+        return interaction.reply({
           embeds: [
             new EmbedBuilder()
               .setColor("#1f8b4c")
@@ -55,23 +82,14 @@ module.exports = {
       }
 
       case "allocate": {
-        const category = args[1]?.toLowerCase();
-        const amount = parseInt(args[2]);
-
-        const validCategories = ["infrastructure", "healthcare", "education", "defense", "welfare"];
-
-        if (!validCategories.includes(category)) {
-          return message.reply(
-            `❌ Invalid category. Use: ${validCategories.join(", ")}`
-          );
-        }
-
-        if (isNaN(amount) || amount <= 0) {
-          return message.reply("❌ Please enter a valid amount.");
-        }
+        const category = interaction.options.getString("category");
+        const amount = interaction.options.getInteger("amount");
 
         if (government.taxes.treasury < amount) {
-          return message.reply("❌ Not enough funds in treasury.");
+          return interaction.reply({
+            content: "❌ Not enough funds in treasury.",
+            ephemeral: true
+          });
         }
 
         government.taxes.treasury -= amount;
@@ -79,7 +97,7 @@ module.exports = {
         government.budget.totalExpenses += amount;
         await government.save();
 
-        return message.reply({
+        return interaction.reply({
           embeds: [
             new EmbedBuilder()
               .setColor("#00ff00")
@@ -92,19 +110,6 @@ module.exports = {
           ]
         });
       }
-
-      default:
-        return message.reply({
-          embeds: [
-            new EmbedBuilder()
-              .setColor("#1f8b4c")
-              .setTitle("💰 Budget Commands")
-              .addFields(
-                { name: "$budget view", value: "View the government budget" },
-                { name: "$budget allocate <category> <amount>", value: "Allocate funds to a category" }
-              )
-          ]
-        });
     }
   }
 };

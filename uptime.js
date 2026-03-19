@@ -1,8 +1,19 @@
+const { SlashCommandBuilder } = require("discord.js");
+
 module.exports = {
-  name: "uptime",
-  description: "Check how long the bot has been running",
-  async execute(message, args, client) {
-    const duration = require('ms')(client.uptime, { long: true });
-    message.reply(`🚀 I've been online for **${duration}**.`);
+  data: new SlashCommandBuilder()
+    .setName("uptime")
+    .setDescription("Check how long the bot has been online"),
+
+  async execute(interaction) {
+    let totalSeconds = (interaction.client.uptime / 1000);
+    let days = Math.floor(totalSeconds / 86400);
+    totalSeconds %= 86400;
+    let hours = Math.floor(totalSeconds / 3600);
+    totalSeconds %= 3600;
+    let minutes = Math.floor(totalSeconds / 60);
+    let seconds = Math.floor(totalSeconds % 60);
+
+    await interaction.reply(`⏳ Uptime: **${days}d ${hours}h ${minutes}m ${seconds}s**`);
   }
 };

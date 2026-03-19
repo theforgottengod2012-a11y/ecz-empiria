@@ -1,30 +1,34 @@
-const { EmbedBuilder, PermissionFlagsBits } = require("discord.js");
+const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } = require("discord.js");
 const Government = require("../../database/models/Government");
 const User = require("../../database/models/User");
 
 module.exports = {
-  name: "fine",
-  description: "Issue a fine to a user",
-  category: "government",
-  ownerOnly: false,
-  userPermissions: [PermissionFlagsBits.Administrator],
-  async execute(message, args) {
-    const guildId = message.guild.id;
-    const target = message.mentions.users.first();
-    const amount = parseInt(args[1]);
-    const reason = args.slice(2).join(" ") || "No reason provided";
+  data: new SlashCommandBuilder()
+    .setName("fine")
+    .setDescription("Issue a fine to a user")
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+    .addUserOption((opt) =>
+      opt.setName("user").setDescription("User to fine").setRequired(true)
+    )
+    .addIntegerOption((opt) =>
+      opt.setName("amount").setDescription("Fine amount").setRequired(true).setMinValue(1)
+    )
+    .addStringOption((opt) =>
+      opt.setName("reason").setDescription("Reason for fine")
+    ),
 
-    if (!target) {
-      return message.reply("❌ Please mention a user to fine.");
-    }
-
-    if (isNaN(amount) || amount <= 0) {
-      return message.reply("❌ Please enter a valid amount.");
-    }
+  async execute(interaction) {
+    const guildId = interaction.guild.id;
+    const target = interaction.options.getUser("user");
+    const amount = interaction.options.getInteger("amount");
+    const reason = interaction.options.getString("reason") || "No reason provided";
 
     let government = await Government.findOne({ guildId });
     if (!government || !government.government.enabled) {
-      return message.reply("❌ Government system is not enabled.");
+      return interaction.reply({
+        content: "❌ Government system is not enabled.",
+        ephemeral: true
+      });
     }
 
     let user = await User.findOne({ userId: target.id });
@@ -43,11 +47,10 @@ module.exports = {
     government.enforcement.fines.push(fineRecord);
     await government.save();
 
-    // Deduct from wallet
     user.wallet = Math.max(0, user.wallet - amount);
     await user.save();
 
-    message.reply({
+    await interaction.reply({
       embeds: [
         new EmbedBuilder()
           .setColor("#ff0000")
@@ -66,7 +69,7 @@ module.exports = {
           .setColor("#ff0000")
           .setTitle("⚠️ You've Been Fined!")
           .addFields(
-            { name: "Server", value: message.guild.name, inline: false },
+            { name: "Server", value: interaction.guild.name, inline: false },
             { name: "Fine Amount", value: `$${amount}`, inline: true },
             { name: "Reason", value: reason, inline: false }
           )

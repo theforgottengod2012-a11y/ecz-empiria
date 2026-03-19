@@ -1,39 +1,90 @@
-const { EmbedBuilder, PermissionFlagsBits } = require("discord.js");
+const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } = require("discord.js");
 const Government = require("../../database/models/Government");
 
 module.exports = {
-  name: "govsetup",
-  description: "Setup and configure the government system for your server",
-  category: "government",
-  ownerOnly: false,
-  userPermissions: [PermissionFlagsBits.Administrator],
-  async execute(message, args) {
-    const guildId = message.guild.id;
-    const subcommand = args[0]?.toLowerCase();
-
-    if (!subcommand) {
-      return message.reply({
-        embeds: [
-          new EmbedBuilder()
-            .setColor("#1f8b4c")
-            .setTitle("🏛️ Government System Setup")
-            .setDescription("Use the following subcommands to setup your government system:")
-            .addFields(
-              { name: "$govsetup enable", value: "Enable the government system" },
-              { name: "$govsetup type <democracy/monarchy/autocracy/republic>", value: "Set government type" },
-              { name: "$govsetup president <@user>", value: "Set president" },
-              { name: "$govsetup vicepres <@user>", value: "Set vice president" },
-              { name: "$govsetup incometax <0-100>", value: "Set income tax percentage" },
-              { name: "$govsetup capitalgains <0-100>", value: "Set capital gains tax" },
-              { name: "$govsetup wealthtax <0-100>", value: "Set wealth tax" },
-              { name: "$govsetup businesstax <0-100>", value: "Set business tax" },
-              { name: "$govsetup gamblingtax <0-100>", value: "Set gambling tax" },
-              { name: "$govsetup status", value: "View current government settings" }
+  data: new SlashCommandBuilder()
+    .setName("govsetup")
+    .setDescription("Setup and configure the government system")
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+    .addSubcommand((sub) =>
+      sub
+        .setName("enable")
+        .setDescription("Enable the government system")
+    )
+    .addSubcommand((sub) =>
+      sub
+        .setName("type")
+        .setDescription("Set government type")
+        .addStringOption((opt) =>
+          opt
+            .setName("type")
+            .setDescription("Type of government")
+            .addChoices(
+              { name: "Democracy", value: "democracy" },
+              { name: "Monarchy", value: "monarchy" },
+              { name: "Autocracy", value: "autocracy" },
+              { name: "Republic", value: "republic" }
             )
-            .setFooter({ text: "Server Admins Only" })
-        ]
-      });
-    }
+            .setRequired(true)
+        )
+    )
+    .addSubcommand((sub) =>
+      sub
+        .setName("president")
+        .setDescription("Set president")
+        .addUserOption((opt) =>
+          opt
+            .setName("user")
+            .setDescription("The new president")
+            .setRequired(true)
+        )
+    )
+    .addSubcommand((sub) =>
+      sub
+        .setName("vicepres")
+        .setDescription("Set vice president")
+        .addUserOption((opt) =>
+          opt
+            .setName("user")
+            .setDescription("The new vice president")
+            .setRequired(true)
+        )
+    )
+    .addSubcommand((sub) =>
+      sub
+        .setName("status")
+        .setDescription("View current government settings")
+    )
+    .addSubcommand((sub) =>
+      sub
+        .setName("taxes")
+        .setDescription("Set tax rates")
+        .addStringOption((opt) =>
+          opt
+            .setName("type")
+            .setDescription("Type of tax")
+            .addChoices(
+              { name: "Income Tax", value: "incometax" },
+              { name: "Capital Gains Tax", value: "capitalgains" },
+              { name: "Wealth Tax", value: "wealthtax" },
+              { name: "Business Tax", value: "businesstax" },
+              { name: "Gambling Tax", value: "gamblingtax" }
+            )
+            .setRequired(true)
+        )
+        .addIntegerOption((opt) =>
+          opt
+            .setName("percentage")
+            .setDescription("Tax percentage (0-100)")
+            .setMinValue(0)
+            .setMaxValue(100)
+            .setRequired(true)
+        )
+    ),
+
+  async execute(interaction) {
+    const guildId = interaction.guild.id;
+    const subcommand = interaction.options.getSubcommand();
 
     let government = await Government.findOne({ guildId });
     if (!government) {
@@ -44,7 +95,7 @@ module.exports = {
       case "enable": {
         government.government.enabled = true;
         await government.save();
-        return message.reply({
+        return interaction.reply({
           embeds: [
             new EmbedBuilder()
               .setColor("#00ff00")
@@ -55,16 +106,10 @@ module.exports = {
       }
 
       case "type": {
-        const type = args[1]?.toLowerCase();
-        const validTypes = ["democracy", "monarchy", "autocracy", "republic"];
-        if (!validTypes.includes(type)) {
-          return message.reply(
-            `❌ Invalid government type. Use: ${validTypes.join(", ")}`
-          );
-        }
+        const type = interaction.options.getString("type");
         government.government.governmentType = type;
         await government.save();
-        return message.reply({
+        return interaction.reply({
           embeds: [
             new EmbedBuilder()
               .setColor("#1f8b4c")
@@ -75,11 +120,10 @@ module.exports = {
       }
 
       case "president": {
-        const user = message.mentions.users.first();
-        if (!user) return message.reply("❌ Please mention a user!");
+        const user = interaction.options.getUser("user");
         government.government.presidentId = user.id;
         await government.save();
-        return message.reply({
+        return interaction.reply({
           embeds: [
             new EmbedBuilder()
               .setColor("#1f8b4c")
@@ -90,101 +134,15 @@ module.exports = {
       }
 
       case "vicepres": {
-        const user = message.mentions.users.first();
-        if (!user) return message.reply("❌ Please mention a user!");
+        const user = interaction.options.getUser("user");
         government.government.vicePresidentId = user.id;
         await government.save();
-        return message.reply({
+        return interaction.reply({
           embeds: [
             new EmbedBuilder()
               .setColor("#1f8b4c")
               .setTitle("✅ Vice President Set")
               .setDescription(`**${user.tag}** is now the Vice President!`)
-          ]
-        });
-      }
-
-      case "incometax": {
-        const percent = parseInt(args[1]);
-        if (isNaN(percent) || percent < 0 || percent > 100) {
-          return message.reply("❌ Please enter a value between 0-100");
-        }
-        government.taxes.incomeTax = percent;
-        await government.save();
-        return message.reply({
-          embeds: [
-            new EmbedBuilder()
-              .setColor("#1f8b4c")
-              .setTitle("✅ Income Tax Set")
-              .setDescription(`Income tax is now: **${percent}%**`)
-          ]
-        });
-      }
-
-      case "capitalgains": {
-        const percent = parseInt(args[1]);
-        if (isNaN(percent) || percent < 0 || percent > 100) {
-          return message.reply("❌ Please enter a value between 0-100");
-        }
-        government.taxes.capitalGainsTax = percent;
-        await government.save();
-        return message.reply({
-          embeds: [
-            new EmbedBuilder()
-              .setColor("#1f8b4c")
-              .setTitle("✅ Capital Gains Tax Set")
-              .setDescription(`Capital gains tax is now: **${percent}%**`)
-          ]
-        });
-      }
-
-      case "wealthtax": {
-        const percent = parseInt(args[1]);
-        if (isNaN(percent) || percent < 0 || percent > 100) {
-          return message.reply("❌ Please enter a value between 0-100");
-        }
-        government.taxes.wealthTax = percent;
-        await government.save();
-        return message.reply({
-          embeds: [
-            new EmbedBuilder()
-              .setColor("#1f8b4c")
-              .setTitle("✅ Wealth Tax Set")
-              .setDescription(`Wealth tax is now: **${percent}%**`)
-          ]
-        });
-      }
-
-      case "businesstax": {
-        const percent = parseInt(args[1]);
-        if (isNaN(percent) || percent < 0 || percent > 100) {
-          return message.reply("❌ Please enter a value between 0-100");
-        }
-        government.taxes.businessTax = percent;
-        await government.save();
-        return message.reply({
-          embeds: [
-            new EmbedBuilder()
-              .setColor("#1f8b4c")
-              .setTitle("✅ Business Tax Set")
-              .setDescription(`Business tax is now: **${percent}%**`)
-          ]
-        });
-      }
-
-      case "gamblingtax": {
-        const percent = parseInt(args[1]);
-        if (isNaN(percent) || percent < 0 || percent > 100) {
-          return message.reply("❌ Please enter a value between 0-100");
-        }
-        government.taxes.gambling = percent;
-        await government.save();
-        return message.reply({
-          embeds: [
-            new EmbedBuilder()
-              .setColor("#1f8b4c")
-              .setTitle("✅ Gambling Tax Set")
-              .setDescription(`Gambling tax is now: **${percent}%**`)
           ]
         });
       }
@@ -197,7 +155,7 @@ module.exports = {
           ? `<@${government.government.vicePresidentId}>`
           : "Not Set";
 
-        return message.reply({
+        return interaction.reply({
           embeds: [
             new EmbedBuilder()
               .setColor("#1f8b4c")
@@ -236,8 +194,30 @@ module.exports = {
         });
       }
 
-      default:
-        return message.reply("❌ Unknown subcommand. Use `$govsetup` for help.");
+      case "taxes": {
+        const taxType = interaction.options.getString("type");
+        const percentage = interaction.options.getInteger("percentage");
+
+        const taxMap = {
+          incometax: "incomeTax",
+          capitalgains: "capitalGainsTax",
+          wealthtax: "wealthTax",
+          businesstax: "businessTax",
+          gamblingtax: "gambling"
+        };
+
+        government.taxes[taxMap[taxType]] = percentage;
+        await government.save();
+
+        return interaction.reply({
+          embeds: [
+            new EmbedBuilder()
+              .setColor("#1f8b4c")
+              .setTitle("✅ Tax Rate Updated")
+              .setDescription(`${taxType.toUpperCase()} is now **${percentage}%**`)
+          ]
+        });
+      }
     }
   }
 };
